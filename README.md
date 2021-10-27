@@ -1,6 +1,6 @@
 # ofxSceneManagerGui
 
-OpenFrameworks addon to manage scenes using an ensemble ofxGui params. It works great in combination with [ofxTransitionSlider](https://github.com/fusefactory/ofxTransitionSlider).
+OpenFrameworks addon to manage scenes using an ensemble of ofxGui params. It works great in combination with [ofxTransitionSlider](https://github.com/fusefactory/ofxTransitionSlider).
 
 ## Params
 

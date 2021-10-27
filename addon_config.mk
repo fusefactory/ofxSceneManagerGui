@@ -1,6 +1,6 @@
 meta:
 	ADDON_NAME = ofxSceneManagerGui
-	ADDON_DESCRIPTION = OpenFrameworks addon to manage scenes using an ensemble ofxGui params. It works great in combination with ofxTransitionSlider. 
+	ADDON_DESCRIPTION = OpenFrameworks addon to manage scenes using an ensemble of ofxGui params. It works great in combination with ofxTransitionSlider. 
 	ADDON_AUTHOR = fuse*
 	ADDON_TAGS = "ofxSceneManagerGui" "scene manager" "ofxGui" "show" "time manager"
 	ADDON_URL = https://github.com/fusefactory/ofxSceneManagerGui
