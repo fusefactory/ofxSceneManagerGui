@@ -36,7 +36,6 @@ public:
     void startAfterPause();
     void forceNextScene(){forceChangeScene(generalGui.scene+1);};
     void forcePrevScene(){forceChangeScene(generalGui.scene-1);};
-    //void forceCustomScene(int numScene) { forceChangeScene(numScene) };
     void forceBackwardTimeMillis(float millis);
     void forceForwardTimeMillis(float millis);
     void forceChangeScene(string timelineFilename);
@@ -47,14 +46,19 @@ public:
     bool deleteFileCurrentSceneTimelineGui();                  //delete file of current scene
     void createNewFileSceneTimelineGui();                      //create new scene
     void update();
-    void update(bool enableAbletonChange, bool abletonTrigger, int albetonSceneNum);
     void updateTime(bool updateGuiTime = false);
         
     void draw();
     
     int getNumberScenes() {return timelines.size(); };
-    int getNumberCurrentMainScene();                //return the number of current main scece timeline04_00.xml > 4
-    int getNumberCurrentScene(); // return the number of the current regular scene, no distinction between main and sub-scene
+    int getNumberCurrentMainScene();                    //return the number of current main scece timeline04_00.xml > 4
+    int getNumberCurrentSubScene();                     //return the number of current sub scece timeline04_00.xml > 4
+    float getRelSceneTimeNormalized();                  //return the normalized value current subscene time
+    
+    string getCurrentSceneName();
+    vector<string> getNextScenesNames(int number);              //return a vector with the name (param inside xml) of the scene
+    vector<string> getPreviousScenesNames(int number);          //return a vector with the name (param inside xml) of the scene
+
     bool isPlaying(){return bIsPlaying ;} ;
     bool isLoading() {return bIsLoading; };
 
@@ -114,6 +118,7 @@ protected:
     SceneTimelineGui sceneTimelineGui;
     
     vector<string>timelines;                                 //all .xml file inside scenes/_timeline
+    vector<string>sceneNames;                                //value name inside scene
     vector<reference_wrapper<SceneBaseGui>> sceneGuiVector;  //put here all transition slider
     
     bool bInfinityTime = true;

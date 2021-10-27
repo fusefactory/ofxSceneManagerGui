@@ -90,9 +90,64 @@ int ofxSceneManagerGui::getNumberCurrentMainScene(){
     return utils.getNumberMainScene(generalGui.sceneFile);
 }
 
-int ofxSceneManagerGui::getNumberCurrentScene() {
+int ofxSceneManagerGui::getNumberCurrentSubScene() {
+    string s = generalGui.sceneFile;
+    return utils.getNumberSubScene(generalGui.sceneFile);
+}
 
-    return generalGui.scene;
+string ofxSceneManagerGui::getCurrentSceneName() {
+   return sceneNames.at(generalGui.scene);
+}
+
+vector<string> ofxSceneManagerGui::getNextScenesNames(int number) {
+    vector<string> nextNames;
+    int currentMainScene = getNumberCurrentMainScene();
+
+    for (int i = 1; i <= number; i++) {
+        int index = generalGui.scene + i;
+        if (index < sceneNames.size()) {
+            string sceneFile = timelines.at(index);
+            int mainScene = utils.getNumberMainScene(sceneFile);
+            if (mainScene == currentMainScene) {
+                string name = sceneNames.at(index); //name of the current scene
+                nextNames.push_back(name);
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    return nextNames;
+}
+
+vector<string> ofxSceneManagerGui::getPreviousScenesNames(int number) {
+    vector<string> nextNames;
+    int currentMainScene = getNumberCurrentMainScene();
+
+    for (int i = 0; i < number; i++) {
+        int index = generalGui.scene - number + i;
+
+        if (index > 0) {
+            string sceneFile = timelines.at(index);
+            int mainScene = utils.getNumberMainScene(sceneFile);
+
+            if (mainScene == currentMainScene) {
+                string name = sceneNames.at(index); //name of the current scene
+                nextNames.push_back(name);
+            }
+        }
+    }
+
+    return nextNames;
+}
+
+float ofxSceneManagerGui::getRelSceneTimeNormalized() {
+    float totSubSceneTime = startTime.nextScene - startTime.curScene;
+    float difference = totSubSceneTime - generalGui.relSceneTime;
+    float normalizedValue = 1.0 - ofClamp(difference / totSubSceneTime, 0.0, 1.0);
+
+    return normalizedValue;
 }
 
 bool ofxSceneManagerGui::loadSceneTimelineGuiXml(int index){
@@ -531,106 +586,6 @@ void ofxSceneManagerGui::update() {
 
     int msR = generalGui.sceneTime;
     std::chrono::milliseconds ms3{ msR };
-    generalGui.sceneTimeHr = format_duration(ms3);
-}
-void ofxSceneManagerGui::update( bool enableAbletonChange, bool abletonTrigger, int albetonSceneNum){    
-    //force to stop while is loading
-    if(isLoading()) generalGui.play = false;
-    
-    if(generalGui.play != bIsPlaying){
-        if(generalGui.play){
-            if(startShowTimeMillis == 0) startShow();
-            else{
-                startAfterPause();
-            }
-        }
-        else if(!generalGui.play) pauseShow();
-    }
-    
-    updateTime(isPlaying());
-    
-    if(isPlaying()){
-        
-        if (enableAbletonChange) {
-            if (abletonTrigger) {
-                clock_t start, end;
-                start = clock();
-                ios_base::sync_with_stdio(false);
-
-                //next scene
-                changeScene(albetonSceneNum);
-
-                end = clock();
-
-                // Calculating total time taken by the program.
-                double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-                ofLog(OF_LOG_NOTICE) << "ofxSceneManagerGui::time to changeScene is " << time_taken << setprecision(5) << " seconds";
-            }
-            else {
-                sceneTimelineGui.update();
-
-                //update scene base gui
-                for (SceneBaseGui& sceneBaseGui : sceneGuiVector)
-                    sceneBaseGui.update();
-            }
-
-
-
-        }
-        else {
-            if (generalGui.time > startTime.nextScene&& generalGui.scene < getNumberScenes() - 1 && (bInfinityTime == false || sceneTimelineGui.infinityTime == false)) {
-                clock_t start, end;
-                start = clock();
-                ios_base::sync_with_stdio(false);
-
-                //next scene
-                changeScene(generalGui.scene + 1);
-
-                end = clock();
-
-                // Calculating total time taken by the program.
-                double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-                ofLog(OF_LOG_NOTICE) << "ofxSceneManagerGui::time to changeScene is " << time_taken << setprecision(5) << " seconds";
-            }
-            else {
-                sceneTimelineGui.update();
-
-                //update scene base gui
-                for (SceneBaseGui& sceneBaseGui : sceneGuiVector)
-                    sceneBaseGui.update();
-            }
-
-        }
-        
-    }
-//    else if((! isPlaying() && sceneTimelineGui.autoStart) || generalGui.relSceneTime > 2){
-//        //update scene base gui
-//        for(SceneBaseGui &sceneBaseGui : sceneGuiVector)
-//            sceneBaseGui.update();
-//    }
-    else{
-        // !! isPlaying()
-        if(settings.bJumpToFinalValueTransitionSliderWhilePause){
-            for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
-                sceneBaseGui.jumpToFinalValueTranistionSlider();
-            }
-        }
-        else if(generalGui.relSceneTime > 2){
-            for(SceneBaseGui &sceneBaseGui : sceneGuiVector)
-                sceneBaseGui.update();
-        }
-    }
-    
-    int msI = generalGui.relSceneTime;
-    std::chrono::milliseconds ms {msI};
-    generalGui.relSceneTimeHr = format_duration(ms);
-    
-    int msS = generalGui.time;
-    std::chrono::milliseconds ms2 {msS};
-    generalGui.timeHr = format_duration(ms2);
-    
-    int msR = generalGui.sceneTime;
-    std::chrono::milliseconds ms3 {msR};
     generalGui.sceneTimeHr = format_duration(ms3);
 }
 
