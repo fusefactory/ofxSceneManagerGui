@@ -1,0 +1,49 @@
+//
+//  SceneBaseGui.cpp
+//  VanGoghInMe_OF
+//
+//  Created by Matteo on 20/03/2020.
+//
+
+
+#ifndef SceneBaseGui_cpp
+#define SceneBaseGui_cpp
+
+#include "SceneBaseGui.hpp"
+
+void SceneBaseGui::setDurationAllTransitionSlider(float duration){
+    for(ofxTransitionFloatSlider &slider : transitionFloatSliderVector){
+        slider.setTransitionDuration(duration);
+    }
+    
+    for(ofxTransitionIntSlider &slider : transitionIntSliderVector){
+        slider.setTransitionDuration(duration);
+    }
+}
+
+void SceneBaseGui::jumpToFinalValueTranistionSlider(){
+    for(ofxTransitionFloatSlider &slider : transitionFloatSliderVector){
+        slider.jumpToFinalValue();
+    }
+    
+    for(ofxTransitionIntSlider &slider : transitionIntSliderVector){
+        slider.jumpToFinalValue();
+    }
+}
+
+void SceneBaseGui::update(){
+    for(ofxTransitionFloatSlider &slider : transitionFloatSliderVector){
+        slider.update();
+    }
+    
+    for(ofxTransitionIntSlider &slider : transitionIntSliderVector){
+        slider.update();
+    }
+}
+
+void SceneBaseGui::setFilename(std::string filename){
+    SceneBaseGui::filename = filename;
+}
+
+
+#endif /* SceneBaseGui_cpp */
