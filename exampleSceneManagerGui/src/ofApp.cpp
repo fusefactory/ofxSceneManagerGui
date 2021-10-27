@@ -51,14 +51,14 @@ void ofApp::draw(){
     updateGui.draw();
     drawGui.draw();
     
-    string help =   "spacebard: start/pause\n";
+    string help =   "spacebar: start/pause\n";
     help +=         "key up - next scene\n";
     help +=         "key down - previous scene\n";
     help +=         "key right - go forward 2000 ms\n";
     help +=         "key left -  go back 2000 ms\n";
-    help +=         "A -  Add a scene\n";
-    help +=         "S -  Save current scene\n";
-    help +=         "D -  Delete current scene\n";
+    help +=         "A - Add a scene\n";
+    help +=         "S - Save current scene\n";
+    help +=         "D - Delete current scene\n";
     
         
     ofDrawBitmapStringHighlight(help, 225, 250, ofColor(0, 127), ofColor(255));
