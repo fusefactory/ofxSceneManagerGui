@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<timeline>
+    <name>Scene Turn Around</name>
+	<startTime>10000</startTime>
+	<autoStart>1</autoStart>
+	<infinityTime>0</infinityTime>
+	<transitionTime>1000</transitionTime>
+</timeline>

@@ -25,6 +25,7 @@ public:
     void jumpToFinalValueTranistionSlider();
     void setFilename(std::string filename);
     std::string getFilename(){return filename; } ;
+    void setTransitionTimeBased(bool timeBased, int framerateReference = 60);
     
 protected:
     //TODO: improve to generics type

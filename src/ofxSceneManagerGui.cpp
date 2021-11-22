@@ -594,6 +594,24 @@ void ofxSceneManagerGui::draw(){
     sceneTimelineGui.draw();
 }
 
+#pragma mark ofxTransitionSlider Time vs Frame
+
+void ofxSceneManagerGui::setTransitionSliderTimeBased(){
+    bTransitionTimeBased = true;
+    
+    for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
+        sceneBaseGui.setTransitionTimeBased(true);
+    }
+}
+
+void ofxSceneManagerGui::setTransitionSliderFrameBased(int framerateReference){
+    bTransitionTimeBased = false;
+    
+    for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
+        sceneBaseGui.setTransitionTimeBased(false, framerateReference);
+    }
+}
+
 string format_duration( std::chrono::milliseconds ms ) {
     using namespace std::chrono;
     auto secs = duration_cast<seconds>(ms);

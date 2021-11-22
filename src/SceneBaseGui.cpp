@@ -45,5 +45,24 @@ void SceneBaseGui::setFilename(std::string filename){
     SceneBaseGui::filename = filename;
 }
 
+void SceneBaseGui::setTransitionTimeBased(bool timeBased, int framerateReference){
+    for(ofxTransitionFloatSlider &slider : transitionFloatSliderVector){
+        if(timeBased){
+            slider.setTransitionTimeBased(true);
+        }else{
+            slider.setTransitionTimeBased(false);
+            slider.setFramerateReference(framerateReference);
+        }
+    }
+    
+    for(ofxTransitionIntSlider &slider : transitionIntSliderVector){
+        if(timeBased){
+            slider.setTransitionTimeBased(true);
+        }else{
+            slider.setTransitionTimeBased(false);
+            slider.setFramerateReference(framerateReference);
+        }
+    }
+}
 
 #endif /* SceneBaseGui_cpp */
