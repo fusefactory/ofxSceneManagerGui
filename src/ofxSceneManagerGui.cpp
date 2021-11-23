@@ -34,7 +34,7 @@ void ofxSceneManagerGui::setup(vector<reference_wrapper<SceneBaseGui>> &sceneGui
     sceneTimelineGui.setup("timeline");            //name inside xml
     sceneTimelineGui.setFolder(dir.getOriginalDirectory() + "_timeline");
     sceneTimelineGui.load();
-    sceneTimelineGui.setPosition(generalGui.getPosition().x, generalGui.getPosition().y + generalGui.getHeight() + 20);
+    sceneTimelineGui.setPosition(generalGui.getPosition().x, generalGui.getPosition().y + generalGui.getHeight() + 10);
 
     reloadTimelines(sceneTimelineGui.getFolder());
         
