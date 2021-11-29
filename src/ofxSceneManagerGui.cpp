@@ -174,6 +174,7 @@ void ofxSceneManagerGui::updateStartTime(SceneTimelineGui &sceneTimelineGui, con
     
     if(utils.isMainScene(fullPath)){
         startTime.curMainScene = startTime.curScene;
+        mainSceneFrameCounter = 0;
     }else{
         //retrive start time of main scene
         string curMainSceneFile = utils.getMainSceneName(timelines.at(index));
@@ -373,7 +374,11 @@ void ofxSceneManagerGui::changeScene(int index){
             generalGui.sceneTime.setMin(0);
             generalGui.sceneTime.setMax(nextMainSceneTime - startTime.curMainScene);
             generalGui.relSceneTime.setMax(startTime.nextScene - startTime.curScene);
-
+            
+            //how many frames are in the next scene
+            durationSceneFrame = (startTime.nextScene - startTime.curScene) / 1000.0 * framerateReference;
+            sceneFrameCounter = 0;
+            
             //TODO: improve callback when load from file
             sceneTimelineGui.setDurationAllTransitionSlider(sceneTimelineGui.transitionTime);
             
@@ -413,6 +418,7 @@ void ofxSceneManagerGui::forceChangeScene(int index){
         
         if(isPlaying())  {
             startShowTimeMillis = ofGetSystemTimeMillis() - startTime;
+            showFrameCounter = startTime / 1000.0 * framerateReference;
         }
         else{
             bChangedSceneWhilePause = true;
@@ -431,6 +437,8 @@ void ofxSceneManagerGui::startShow(){
 //    changeScene(generalGui.scene);
     
     startShowTimeMillis = ofGetSystemTimeMillis() - generalGui.time;
+    showFrameCounter = 0;
+    
     bIsPlaying = true;
     generalGui.play = true;
 
@@ -461,19 +469,31 @@ void ofxSceneManagerGui::startAfterPause(){
     ofNotifyEvent(onSceneStarted);
 }
 
+void ofxSceneManagerGui::updateFrameCounter(float millis, int framerate){
+    int nFrames = millis / 1000.0 * framerate;
+    showFrameCounter += nFrames;
+    sceneFrameCounter += nFrames;
+    mainSceneFrameCounter += nFrames;
+}
+
 void ofxSceneManagerGui::forceBackwardTimeMillis(float millis){
     if(generalGui.time - millis > startTime.curScene){
         if(isPlaying()) {
             startShowTimeMillis += millis;
-            generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+                
+            if(bTimeBased) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
         }
-       else {
-           generalGui.time = generalGui.time - millis;
-           bChangedSceneWhilePause = true;
-       }
+        else {
+            generalGui.time = generalGui.time - millis;
+            
+            bChangedSceneWhilePause = true;
+        }
+        
+        if(! bTimeBased) updateFrameCounter(-millis, framerateReference);
+
         
         updateTime();
-
+        
         ofNotifyEvent(onSceneBackwarded);
     }
 }
@@ -482,12 +502,16 @@ void ofxSceneManagerGui::forceForwardTimeMillis(float millis){
     if(generalGui.time + millis < startTime.nextScene){
         if(isPlaying()) {
             startShowTimeMillis -= millis;
-            generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+
+            if(bTimeBased) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
         }
         else {
             generalGui.time = generalGui.time + millis;
+            
             bChangedSceneWhilePause = true;
         }
+        
+        if(! bTimeBased) updateFrameCounter(millis, framerateReference);
     
         updateTime();
 
@@ -513,9 +537,16 @@ void ofxSceneManagerGui::forceChangeScene(string timelineFilename){
 #pragma mark Update
 
 void ofxSceneManagerGui::updateTime(bool updateGuiTime){
-    if(updateGuiTime) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
-    generalGui.sceneTime = generalGui.time - startTime.curMainScene;
-    generalGui.relSceneTime = generalGui.time - startTime.curScene;
+    if(bTimeBased){
+        if(updateGuiTime) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+        generalGui.sceneTime = generalGui.time - startTime.curMainScene;
+        generalGui.relSceneTime = generalGui.time - startTime.curScene;
+    }
+    else{
+        if(updateGuiTime) generalGui.time = ((showFrameCounter * 1.0) / framerateReference) * 1000.0;
+        generalGui.sceneTime = ((mainSceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
+        generalGui.relSceneTime = ((sceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
+    }
 }
 
 void ofxSceneManagerGui::update() {
@@ -535,34 +566,34 @@ void ofxSceneManagerGui::update() {
     updateTime(isPlaying());
 
     if (isPlaying()) {
-
-        if (generalGui.time > startTime.nextScene&& generalGui.scene < getNumberScenes() - 1 && (bInfinityTime == false || sceneTimelineGui.infinityTime == false)) {
+        
+        sceneFrameCounter++;
+        mainSceneFrameCounter++;
+        showFrameCounter ++;
+                
+        bool bNextScene = bTimeBased ? generalGui.time > startTime.nextScene : sceneFrameCounter >= durationSceneFrame;
+        if (bNextScene && generalGui.scene < getNumberScenes() - 1 && (bInfinityTime == false || sceneTimelineGui.infinityTime == false)) {
             clock_t start, end;
             start = clock();
             ios_base::sync_with_stdio(false);
-
+            
             //next scene
             changeScene(generalGui.scene + 1);
-
+            
             end = clock();
-
+            
             // Calculating total time taken by the program.
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
             ofLog(OF_LOG_NOTICE) << "ofxSceneManagerGui::time to changeScene is " << time_taken << setprecision(5) << " seconds";
         }
         else {
             sceneTimelineGui.update();
-
+            
             //update scene base gui
             for (SceneBaseGui& sceneBaseGui : sceneGuiVector)
                 sceneBaseGui.update();
         }
     }
-    //    else if((! isPlaying() && sceneTimelineGui.autoStart) || generalGui.relSceneTime > 2){
-    //        //update scene base gui
-    //        for(SceneBaseGui &sceneBaseGui : sceneGuiVector)
-    //            sceneBaseGui.update();
-    //    }
     else {
         // !! isPlaying()
         if (settings.bJumpToFinalValueTransitionSliderWhilePause) {
@@ -596,17 +627,34 @@ void ofxSceneManagerGui::draw(){
 
 #pragma mark ofxTransitionSlider Time vs Frame
 
-void ofxSceneManagerGui::setTransitionSliderTimeBased(){
-    bTransitionTimeBased = true;
+void ofxSceneManagerGui::setTimeBased(){
+    if(! bTimeBased){
+        generalGui.time = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
+        generalGui.sceneTime = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
+        generalGui.relSceneTime = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
+        
+        startShowTimeMillis =  ofGetSystemTimeMillis() - generalGui.time;
+    }
+    
+    bTimeBased = true;
     
     for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
         sceneBaseGui.setTransitionTimeBased(true);
     }
 }
 
-void ofxSceneManagerGui::setTransitionSliderFrameBased(int framerateReference){
-    bTransitionTimeBased = false;
+void ofxSceneManagerGui::setFrameBased(int framerateReference){
+    ofxSceneManagerGui::framerateReference = framerateReference;
     
+    if(bTimeBased){
+        //set all frame counter from current time
+        showFrameCounter = generalGui.time / 1000.0 * framerateReference;
+        mainSceneFrameCounter = generalGui.sceneTime / 1000.0f * framerateReference;
+        sceneFrameCounter = generalGui.relSceneTime / 1000.0f * framerateReference;
+    }
+    
+    bTimeBased = false;
+
     for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
         sceneBaseGui.setTransitionTimeBased(false, framerateReference);
     }

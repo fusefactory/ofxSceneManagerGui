@@ -77,9 +77,9 @@ public:
     ofEvent<void> onSceneForwarded;                 //event when the current scene is farward
     
     inline void setEnableInfinityTime(bool enabled) {bInfinityTime = enabled; }
-    void setTransitionSliderTimeBased();                                        //this method set all transition slider as time based
-    void setTransitionSliderFrameBased(int framerateReference);                 //this method set all transition slider as frame based
-    inline bool isTransitionSliderTimeBased(){return bTransitionTimeBased; }
+    void setTimeBased();                                        //this method set all transition slider as time based
+    void setFrameBased(int framerateReference);                 //this method set all transition slider as frame based
+    inline bool isTimeBased(){return bTimeBased;}
     
 protected:
     string sceneFolder = "scenes/";             //TODO: add the possibility to choose
@@ -125,7 +125,16 @@ protected:
     vector<reference_wrapper<SceneBaseGui>> sceneGuiVector;  //put here all transition slider
     
     bool bInfinityTime = true;
-    bool bTransitionTimeBased = true;
+    
+    //time/frame based
+    bool bTimeBased = true;                                  //if true change scene is time based, if false is frame based
+    int framerateReference = 60.0f;                          //fps to calculate the duration of a scene not time based, but frames based
+    int durationSceneFrame;                                  //durantion of scene expressed in frame
+    int sceneFrameCounter = 0;                               //frameCounter from current scene (relScene)
+    int mainSceneFrameCounter = 0;                           //frameCounter from current main scene
+    int showFrameCounter = 0;                                //frameCounter from the beginning of the show
+    
+    void updateFrameCounter(float millis, int framerate);
    };
 
 #endif /* SceneManager_hpp */

@@ -85,6 +85,17 @@ void ofApp::keyPressed(int key){
         sceneManager.getGeneralGui().play = !sceneManager.getGeneralGui().play;
     }
     
+    if(key == 'a'){
+        updateGui.rotation = 0.5;
+    }
+    if(key == 'b'){
+        updateGui.rotation.jumpToValue(0.5);
+    }
+    if(key == 'c'){
+        if(sceneManager.isTimeBased()) sceneManager.setFrameBased(60);
+        else sceneManager.setTimeBased();
+    }
+    
     if(key == 'A'){
         sceneManager.createNewFileSceneTimelineGui();
         ofSystemAlertDialog("SceneManager::Sub scene added");
