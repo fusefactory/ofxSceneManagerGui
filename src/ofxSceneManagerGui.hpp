@@ -40,6 +40,7 @@ public:
     void forceForwardTimeMillis(float millis);
     void forceChangeScene(string timelineFilename);
     
+    inline void setSceneFolder(string folder) { sceneFolder = folder; }
     inline string getSceneFolder() {return sceneFolder;}
     
     bool saveOverrideFileCurrentSceneGui();                 //save to file overriding gui params
