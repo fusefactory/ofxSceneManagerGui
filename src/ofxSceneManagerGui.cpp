@@ -435,9 +435,8 @@ void ofxSceneManagerGui::forceChangeScene(int index){
 
 void ofxSceneManagerGui::startShow(){
 //    changeScene(generalGui.scene);
-    
     startShowTimeMillis = ofGetSystemTimeMillis() - generalGui.time;
-    showFrameCounter = 0;
+    showFrameCounter = generalGui.time / 1000.0 * framerateReference;
     
     bIsPlaying = true;
     generalGui.play = true;
