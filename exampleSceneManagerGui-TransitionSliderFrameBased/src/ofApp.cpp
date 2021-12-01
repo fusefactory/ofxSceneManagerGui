@@ -88,9 +88,13 @@ void ofApp::keyPressed(int key){
     }
     
     if(key == 'a'){
-        bool timeBased = sceneManager.isTransitionSliderTimeBased();
-        if(timeBased) sceneManager.setTransitionSliderFrameBased(60);
-        else sceneManager.setTransitionSliderTimeBased();
+        bool timeBased = sceneManager.isTimeBased();
+        if(timeBased) sceneManager.setFrameBased(60);
+        else sceneManager.setTimeBased();
+    }
+    if(key == 'x'){
+        sceneManager.getGeneralGui().play = !sceneManager.getGeneralGui().play;
+        sceneManager.setFrameBased(30);
     }
     
     if(key == 'A'){
