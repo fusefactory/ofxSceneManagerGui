@@ -642,6 +642,10 @@ void ofxSceneManagerGui::setTimeBased(){
     }
 }
 
+void ofxSceneManagerGui::setFramerateReference(int framerateReference){
+    ofxSceneManagerGui::framerateReference = framerateReference;
+}
+
 void ofxSceneManagerGui::setFrameBased(int framerateReference){
     ofxSceneManagerGui::framerateReference = framerateReference;
     

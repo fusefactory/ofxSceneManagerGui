@@ -80,6 +80,7 @@ public:
     inline void setEnableInfinityTime(bool enabled) {bInfinityTime = enabled; }
     void setTimeBased();                                        //this method set all transition slider as time based
     void setFrameBased(int framerateReference);                 //this method set all transition slider as frame based
+    void setFramerateReference(int framerateReference);         //TODO: there is a bug for the first transition. You need to set this value.
     inline bool isTimeBased(){return bTimeBased;}
     
 protected:
