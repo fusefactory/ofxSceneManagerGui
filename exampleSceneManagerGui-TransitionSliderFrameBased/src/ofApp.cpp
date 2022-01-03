@@ -31,6 +31,7 @@ void ofApp::setup(){
     //5. Setup sceneManager with the vector of SceneBase and the position
     ofVec2f sceneManagerGuiPos = ofVec2f(10, 30);
     sceneManager.setup(sceneGuiVector, sceneManagerGuiPos);
+    sceneManager.setFrameBased(30);
     
     //set positions of other guis
     int guiWidth = 202;
@@ -89,7 +90,7 @@ void ofApp::keyPressed(int key){
     
     if(key == 'a'){
         bool timeBased = sceneManager.isTimeBased();
-        if(timeBased) sceneManager.setFrameBased(60);
+        if(timeBased) sceneManager.setFrameBased(30);
         else sceneManager.setTimeBased();
     }
     if(key == 'x'){

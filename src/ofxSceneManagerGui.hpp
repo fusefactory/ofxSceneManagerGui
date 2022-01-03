@@ -130,7 +130,7 @@ protected:
     
     //time/frame based
     bool bTimeBased = true;                                  //if true change scene is time based, if false is frame based
-    int framerateReference = 60.0f;                          //fps to calculate the duration of a scene not time based, but frames based
+    int framerateReference = 60;                             //fps to calculate the duration of a scene not time based, but frames based
     int durationSceneFrame;                                  //durantion of scene expressed in frame
     int sceneFrameCounter = 0;                               //frameCounter from current scene (relScene)
     int mainSceneFrameCounter = 0;                           //frameCounter from current main scene
