@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<timeline>
+	<audio>soundtrack/none.mp3</audio>
+	<name>Scene Top</name>
+	<autoStart>1</autoStart>
+	<startTime>0</startTime>
+	<transitionTime>100</transitionTime>
+	<infinityTime>0</infinityTime>
+</timeline>

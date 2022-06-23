@@ -15,7 +15,6 @@ OpenFrameworks addon to manage scenes using an ensemble of ofxGui params. It wor
 
 For now, you have to create main scene manually, the scene manager allows you to generate only (sub) scenes using the keyboard. This could be improved in the future.
 
-
 ## Examples
 
 ### exampleSceneManger
@@ -26,3 +25,17 @@ A simple example to understand how to use the scene manager and how to organize 
 
 
 - exampleSceneAudio - TODO
+- exampleSceneManagerGui-TransitionSliderFrameBased
+- ofxSceneManagerGui-TimecodeLTC
+
+## Usage - SceneTime
+
+The time (play) can be managed in 3 different modes:
+
+- (default) ``` ofSystemTimeMillis ``` it uses the system time 
+
+- ``` FrameBased ```  it ignores the time, but using the number of frames from a scene and another one. This is useful if you need to export a movie and your app has not have a constant framerate
+
+- ``` ExternalTimeMillis ```  it uses an external value to manage time. For example using timecode to control the scene time.
+
+We tested to pass from ``` ofSystemTimeMillis ``` and  ``` FrameBased ``` at runtime. Using  ``` ExternalTimeMillis ``` it is better to start the application in this mode (otherside behaviour is undefined).

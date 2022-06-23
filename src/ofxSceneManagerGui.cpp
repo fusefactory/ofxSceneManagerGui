@@ -480,7 +480,7 @@ void ofxSceneManagerGui::forceBackwardTimeMillis(float millis){
         if(isPlaying()) {
             startShowTimeMillis += millis;
                 
-            if(bTimeBased) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+            if(timePlayingType == ofSystemTimeMillis) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
         }
         else {
             generalGui.time = generalGui.time - millis;
@@ -488,8 +488,7 @@ void ofxSceneManagerGui::forceBackwardTimeMillis(float millis){
             bChangedSceneWhilePause = true;
         }
         
-        if(! bTimeBased) updateFrameCounter(-millis, framerateReference);
-
+        if(timePlayingType == FrameBased) updateFrameCounter(-millis, framerateReference);
         
         updateTime();
         
@@ -502,7 +501,7 @@ void ofxSceneManagerGui::forceForwardTimeMillis(float millis){
         if(isPlaying()) {
             startShowTimeMillis -= millis;
 
-            if(bTimeBased) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+            if(timePlayingType == ofSystemTimeMillis) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
         }
         else {
             generalGui.time = generalGui.time + millis;
@@ -510,7 +509,7 @@ void ofxSceneManagerGui::forceForwardTimeMillis(float millis){
             bChangedSceneWhilePause = true;
         }
         
-        if(! bTimeBased) updateFrameCounter(millis, framerateReference);
+        if(timePlayingType == FrameBased) updateFrameCounter(millis, framerateReference);
     
         updateTime();
 
@@ -536,15 +535,30 @@ void ofxSceneManagerGui::forceChangeScene(string timelineFilename){
 #pragma mark Update
 
 void ofxSceneManagerGui::updateTime(bool updateGuiTime){
-    if(bTimeBased){
-        if(updateGuiTime) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
-        generalGui.sceneTime = generalGui.time - startTime.curMainScene;
-        generalGui.relSceneTime = generalGui.time - startTime.curScene;
-    }
-    else{
-        if(updateGuiTime) generalGui.time = ((showFrameCounter * 1.0) / framerateReference) * 1000.0;
-        generalGui.sceneTime = ((mainSceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
-        generalGui.relSceneTime = ((sceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
+    switch (timePlayingType) {
+        case ofSystemTimeMillis:{
+            if(updateGuiTime) generalGui.time = ofGetSystemTimeMillis() - startShowTimeMillis;
+            generalGui.sceneTime = generalGui.time - startTime.curMainScene;
+            generalGui.relSceneTime = generalGui.time - startTime.curScene;
+            break;
+        }
+        case FrameBased:{
+            if(updateGuiTime) generalGui.time = ((showFrameCounter * 1.0) / framerateReference) * 1000.0;
+            generalGui.sceneTime = ((mainSceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
+            generalGui.relSceneTime = ((sceneFrameCounter * 1.0f) / framerateReference) * 1000.0;
+            break;
+        }
+            
+        case ExternalTimeMillis:{
+            if(externalTimeMillis != NULL){
+                generalGui.time = *externalTimeMillis;
+
+                startShowTimeMillis =  *externalTimeMillis - generalGui.time;
+                generalGui.sceneTime = generalGui.time - startTime.curMainScene;
+                generalGui.relSceneTime = generalGui.time - startTime.curScene;
+            }
+            break;
+        }
     }
 }
 
@@ -569,8 +583,15 @@ void ofxSceneManagerGui::update() {
         sceneFrameCounter++;
         mainSceneFrameCounter++;
         showFrameCounter ++;
-                
-        bool bNextScene = bTimeBased ? generalGui.time > startTime.nextScene : sceneFrameCounter >= durationSceneFrame;
+        
+        //ExternalTimeMillis can jump backward
+        if(timePlayingType == ExternalTimeMillis){
+            while(generalGui.time < startTime.curScene){
+                changeScene(generalGui.scene - 1);
+            }
+        }
+        
+        bool bNextScene = (timePlayingType == ofSystemTimeMillis ||  timePlayingType == ExternalTimeMillis) ? generalGui.time > startTime.nextScene : sceneFrameCounter >= durationSceneFrame;
         if (bNextScene && generalGui.scene < getNumberScenes() - 1 && (bInfinityTime == false || sceneTimelineGui.infinityTime == false)) {
             clock_t start, end;
             start = clock();
@@ -627,7 +648,7 @@ void ofxSceneManagerGui::draw(){
 #pragma mark ofxTransitionSlider Time vs Frame
 
 void ofxSceneManagerGui::setTimeBased(){
-    if(! bTimeBased){
+    if(timePlayingType != ofSystemTimeMillis){
         generalGui.time = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
         generalGui.sceneTime = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
         generalGui.relSceneTime = (showFrameCounter * 1.0 / framerateReference) * 1000.0;
@@ -635,7 +656,7 @@ void ofxSceneManagerGui::setTimeBased(){
         startShowTimeMillis =  ofGetSystemTimeMillis() - generalGui.time;
     }
     
-    bTimeBased = true;
+    timePlayingType = ofSystemTimeMillis;
     
     for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
         sceneBaseGui.setTransitionTimeBased(true);
@@ -649,18 +670,24 @@ void ofxSceneManagerGui::setFramerateReference(int framerateReference){
 void ofxSceneManagerGui::setFrameBased(int framerateReference){
     ofxSceneManagerGui::framerateReference = framerateReference;
     
-    if(bTimeBased){
+    if(timePlayingType == ofSystemTimeMillis){
         //set all frame counter from current time
         showFrameCounter = generalGui.time / 1000.0 * framerateReference;
         mainSceneFrameCounter = generalGui.sceneTime / 1000.0f * framerateReference;
         sceneFrameCounter = generalGui.relSceneTime / 1000.0f * framerateReference;
     }
     
-    bTimeBased = false;
+    timePlayingType = FrameBased;
 
     for(SceneBaseGui &sceneBaseGui : sceneGuiVector){
         sceneBaseGui.setTransitionTimeBased(false, framerateReference);
     }
+}
+
+void ofxSceneManagerGui::setExternalTime(uint64_t* _externalTimeMillis){
+    externalTimeMillis = _externalTimeMillis;
+    timePlayingType = ExternalTimeMillis;
+    generalGui.play = true;
 }
 
 string format_duration( std::chrono::milliseconds ms ) {
