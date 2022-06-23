@@ -17,6 +17,12 @@
 #include "SceneManagerSettings.hpp"
 #include "Scene.hpp"
 
+enum TimePlayingType {
+    ofSystemTimeMillis,        //default mode, it use ofSystemTimeMillis
+    FrameBased,                //it use the number of frame from a scene to the next one (usefull to export a movie where application fps is not constant)
+    ExternalTimeMillis         //follow an external time millis. It can be used to receive timecode and follow that time.
+};
+
 class ofxSceneManagerGui {
     
 protected:
@@ -80,8 +86,10 @@ public:
     inline void setEnableInfinityTime(bool enabled) {bInfinityTime = enabled; }
     void setTimeBased();                                        //this method set all transition slider as time based
     void setFrameBased(int framerateReference);                 //this method set all transition slider as frame based
+    void setExternalTime(uint64_t* externalTimeMillis);
     void setFramerateReference(int framerateReference);         //TODO: there is a bug for the first transition. You need to set this value.
-    inline bool isTimeBased(){return bTimeBased;}
+    inline bool isTimeBased(){return timePlayingType == ofSystemTimeMillis;}
+    inline TimePlayingType getTimePlayingType(){return timePlayingType; }
     
 protected:
     string sceneFolder = "scenes/";             //TODO: add the possibility to choose
@@ -129,7 +137,9 @@ protected:
     bool bInfinityTime = true;
     
     //time/frame based
-    bool bTimeBased = true;                                  //if true change scene is time based, if false is frame based
+    TimePlayingType timePlayingType = ofSystemTimeMillis;
+//    bool bTimeBased = true;                                  //if true change scene is time based, if false is frame based
+    uint64_t* externalTimeMillis;                            //pointer to external time millis (example timecode)
     int framerateReference = 60;                             //fps to calculate the duration of a scene not time based, but frames based
     int durationSceneFrame;                                  //durantion of scene expressed in frame
     int sceneFrameCounter = 0;                               //frameCounter from current scene (relScene)
