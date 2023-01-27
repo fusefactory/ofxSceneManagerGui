@@ -21,7 +21,7 @@ void SceneBaseGui::setDurationAllTransitionSlider(float duration){
     }
 }
 
-void SceneBaseGui::jumpToFinalValueTranistionSlider(){
+void SceneBaseGui::jumpToFinalValueTransitionSlider(){
     for(ofxTransitionFloatSlider &slider : transitionFloatSliderVector){
         slider.jumpToFinalValue();
     }

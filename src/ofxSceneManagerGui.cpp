@@ -597,7 +597,7 @@ void ofxSceneManagerGui::update() {
         // !! isPlaying()
         if (settings.bJumpToFinalValueTransitionSliderWhilePause) {
             for (SceneBaseGui& sceneBaseGui : sceneGuiVector) {
-                sceneBaseGui.jumpToFinalValueTranistionSlider();
+                sceneBaseGui.jumpToFinalValueTransitionSlider();
             }
         }
         else if (generalGui.relSceneTime > 2) {

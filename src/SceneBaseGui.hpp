@@ -22,7 +22,7 @@ public:
     std::string getFolder(){return folder;};
     
     void setDurationAllTransitionSlider(float duration);
-    void jumpToFinalValueTranistionSlider();
+    void jumpToFinalValueTransitionSlider();
     void setFilename(std::string filename);
     std::string getFilename(){return filename; } ;
     void setTransitionTimeBased(bool timeBased, int framerateReference = 60);
