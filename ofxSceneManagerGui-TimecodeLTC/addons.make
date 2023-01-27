@@ -1,0 +1,5 @@
+ofxGui
+ofxLTC
+ofxSceneManagerGui
+ofxTransitionSlider
+ofxXmlSettings
