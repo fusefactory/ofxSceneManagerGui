@@ -590,6 +590,9 @@ void ofxSceneManagerGui::update() {
                 changeScene(generalGui.scene - 1);
             }
         }
+
+        sceneProgress = (timePlayingType == ofSystemTimeMillis || timePlayingType == ExternalTimeMillis) ? (generalGui.sceneTime - startTime.curScene)  / (startTime.nextScene - startTime.curScene + +1e-6) 
+            : sceneFrameCounter / (durationSceneFrame+1e-6);
         
         bool bNextScene = (timePlayingType == ofSystemTimeMillis ||  timePlayingType == ExternalTimeMillis) ? generalGui.time > startTime.nextScene : sceneFrameCounter >= durationSceneFrame;
         if (bNextScene && generalGui.scene < getNumberScenes() - 1 && (bInfinityTime == false || sceneTimelineGui.infinityTime == false)) {
@@ -665,6 +668,11 @@ void ofxSceneManagerGui::setTimeBased(){
 
 void ofxSceneManagerGui::setFramerateReference(int framerateReference){
     ofxSceneManagerGui::framerateReference = framerateReference;
+}
+
+float ofxSceneManagerGui::getCurrentSceneProgress()
+{
+    return this->sceneProgress;
 }
 
 void ofxSceneManagerGui::setFrameBased(int framerateReference){

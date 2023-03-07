@@ -90,7 +90,7 @@ public:
     void setFramerateReference(int framerateReference);         //TODO: there is a bug for the first transition. You need to set this value.
     inline bool isTimeBased(){return timePlayingType == ofSystemTimeMillis;}
     inline TimePlayingType getTimePlayingType(){return timePlayingType; }
-    
+    float getCurrentSceneProgress(); // returns the scene progress in normalized range - from 0 to 1
 protected:
     string sceneFolder = "scenes/";             //TODO: add the possibility to choose
     void reloadTimelines(string folder);        //reload timelines files
@@ -125,6 +125,8 @@ protected:
     SceneManagerUtils utils;
     
     SceneManagerSettings settings;
+
+    float sceneProgress = 0.0;
     
     //BaseGui needed to have a timeline
     GeneralGui generalGui;
