@@ -90,7 +90,9 @@ public:
     void setFramerateReference(int framerateReference);         //TODO: there is a bug for the first transition. You need to set this value.
     inline bool isTimeBased(){return timePlayingType == ofSystemTimeMillis;}
     inline TimePlayingType getTimePlayingType(){return timePlayingType; }
-    
+    void forceChangeScene(int index);
+    void changeScene(int index);
+
 protected:
     string sceneFolder = "scenes/";             //TODO: add the possibility to choose
     void reloadTimelines(string folder);        //reload timelines files
@@ -102,8 +104,6 @@ protected:
     bool loadSceneBaseXml(SceneBaseGui &sceneBaseGui, int index);
     void updateStartTime(SceneTimelineGui &sceneTimelineGui, const int index);
 
-    void forceChangeScene(int index);
-    void changeScene(int index);
     void setDurationAllTransitionSlider(int duration);
 
     bool bIsPlaying = false;
