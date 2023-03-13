@@ -125,8 +125,6 @@ protected:
     SceneManagerUtils utils;
     
     SceneManagerSettings settings;
-
-    float sceneProgress = 0.0;
     
     //BaseGui needed to have a timeline
     GeneralGui generalGui;
